@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class PathFinder implements PathFinderInterface {
 
-    private List<Void> solutions;
+    private List<Solution> solutions;
 
     private Map<BusLineInterface, BusInterface> busLineGridMap;
-    private Map<BusLineInterface, List<BusLineInterface>> intersectionsMap;
+    private Map<BusLineInterface, List<Pair>> intersectionsMap;
 
     public PathFinder() {
         this.solutions = new ArrayList<>();
@@ -35,10 +36,10 @@ public class PathFinder implements PathFinderInterface {
                 if (first.getBusStop(i).getName().equals(second.getBusStop(j).getName())) {
                     this.intersectionsMap
                             .computeIfAbsent(first, k -> new ArrayList<>())
-                            .add(second);
+                            .add(new Pair(second, first.getBusStop(i)));
                     this.intersectionsMap
                             .computeIfAbsent(second, k -> new ArrayList<>())
-                            .add(first);
+                            .add(new Pair(first, first.getBusStop(i)));
                 }
             }
         }
@@ -47,6 +48,30 @@ public class PathFinder implements PathFinderInterface {
     @Override
     public void find(BusStopInterface from, BusStopInterface to, int transfers) {
 
+        this.solutions.clear();
+
+        List<BusLineInterface> startingBusLine = findBusLineByBusStop(from);
+        List<BusLineInterface> destinationBusLine = findBusLineByBusStop(to);
+
+        Optional<BusLineInterface> directConnectionSolution = startingBusLine.stream()
+                .filter(destinationBusLine::contains)
+                .findFirst();
+
+        if (directConnectionSolution.isPresent())
+            this.solutions.add(new Solution());
+
+    }
+
+    private List<BusLineInterface> findBusLineByBusStop(BusStopInterface busStop) {
+        List<BusLineInterface> busLines = new ArrayList<>();
+        this.busLineGridMap.forEach((key, value) -> {
+            for (int i = 0; i < key.getNumberOfBusStops(); i++) {
+                if (key.getBusStop(i).equals(busStop))
+                    busLines.add(key);
+            }
+        });
+
+        return busLines;
     }
 
     @Override
@@ -67,5 +92,30 @@ public class PathFinder implements PathFinderInterface {
     @Override
     public BusInterface getBus(int solution, int busStop) {
         return null;
+    }
+
+    public static class Pair {
+        private BusLineInterface busLine;
+        private BusStopInterface busStop;
+
+        public Pair(BusLineInterface busLine, BusStopInterface busStop) {
+            this.busLine = busLine;
+            this.busStop = busStop;
+        }
+
+        public BusLineInterface getBusLine() {
+            return busLine;
+        }
+
+        public BusStopInterface getBusStop() {
+            return busStop;
+        }
+    }
+
+    public static class Solution {
+
+        public int getBusStops() {
+            return 0;
+        }
     }
 }
