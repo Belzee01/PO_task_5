@@ -77,11 +77,13 @@ public class Main {
         finder.addLine(d4, new BusImpl(4));
 
 
-        finder.find(busStops.get(0), busStops.get(3), 3);
-        System.out.println(finder.getNumerOfSolutions());
-        finder.getSolutions().forEach(s -> System.out.println(s.toString()));
+//        finder.find(busStops.get(0), busStops.get(3), 3);
+//        System.out.println(finder.getNumerOfSolutions());
+//        finder.getSolutions().forEach(s -> System.out.println(s.toString()));
 
-        finder.find(busStops.get(0), busStops.get(4), 0);
+        finder.find(busStops.get(0), busStops.get(7), 3);
         System.out.println(finder.getNumerOfSolutions());
+                finder.getSolutions().forEach(s -> System.out.println(s.toString()));
+
     }
 }
