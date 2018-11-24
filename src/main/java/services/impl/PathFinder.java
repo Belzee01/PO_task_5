@@ -138,12 +138,12 @@ public class PathFinder implements PathFinderInterface {
 
     @Override
     public BusStopInterface getBusStop(int solution, int busStop) {
-        return this.solutions.get(solution).getSolutions().entrySet().stream().filter(i -> i.getKey().).get(busStop);
+        return this.solutions.get(solution).getSolutions().get(busStop).getBusStop();
     }
 
     @Override
     public BusInterface getBus(int solution, int busStop) {
-        return this.solutions.get(solution).getSolutions().get(busStop);
+        return this.solutions.get(solution).getSolutions().get(busStop).getBus();
     }
 
     public List<Solution> getSolutions() {
@@ -229,7 +229,7 @@ public class PathFinder implements PathFinderInterface {
     public class Solution {
 
         private Stack<Pair> busStops;
-        private Map<BusStopInterface, BusInterface> solutions;
+        private LinkedList<BusAndBusStop> solutions;
 
         public Solution() {
             this.busStops = new Stack<>();
@@ -246,7 +246,7 @@ public class PathFinder implements PathFinderInterface {
         }
 
         public void normalizeToBusStops() {
-            Map<BusStopInterface, BusInterface> buses = new LinkedList<>();
+            LinkedList<BusAndBusStop> buses = new LinkedList<>();
 
             for (int i = 1; i < this.busStops.size(); i++) {
                 BusStopInterface prevStop = busStops.get(i - 1).getBusStop();
@@ -254,21 +254,28 @@ public class PathFinder implements PathFinderInterface {
 
                 BusStopInterface nextStop = busStops.get(i).getBusStop();
 
-                buses.putAll(findBusStopInBetween(prevLine, prevStop, nextStop));
+                buses.addAll(findBusStopInBetween(prevLine, prevStop, nextStop));
             }
 
             this.solutions = buses;
         }
 
-        private Map<BusStopInterface, BusInterface> findBusStopInBetween(BusLineInterface line, BusStopInterface from, BusStopInterface to) {
-            Map<BusStopInterface, BusInterface> stops = new HashMap<>();
+        // get index of the busStop
+        // check direction by substracting the indexes e.g. BS:  A -> BS:C ; indexes : 0 -> 2
+        // 2 - 0 = 2, it is positive so it goes in order
+        // from C -> A; 2 -> 0
+        // 0 - 2 = -2 negative, so reverse order
+        // by on the direction run findBysStopsInBetween(line, from, to)
+        // add each busStop, omit already added busStops
+        private LinkedList<BusAndBusStop> findBusStopInBetween(BusLineInterface line, BusStopInterface from, BusStopInterface to) {
+            LinkedList<BusAndBusStop> stops = new LinkedList<>();
             boolean passed = false;
             for (int i = 0; i < line.getNumberOfBusStops(); i++) {
                 if (line.getBusStop(i) == from || line.getBusStop(i) == to)
                     passed = !passed;
 
                 if (passed)
-                    stops.put(line.getBusStop(i), busLineGridMap.get(line));
+                    stops.add(new BusAndBusStop(busLineGridMap.get(line), line.getBusStop(i)));
             }
 
             passed = false;
@@ -277,7 +284,7 @@ public class PathFinder implements PathFinderInterface {
                     passed = !passed;
 
                 if (passed)
-                    stops.put(line.getBusStop(i), busLineGridMap.get(line));
+                    stops.add(new BusAndBusStop(busLineGridMap.get(line), line.getBusStop(i)));
             }
             return stops;
         }
@@ -286,7 +293,7 @@ public class PathFinder implements PathFinderInterface {
             return this.solutions.size();
         }
 
-        public Map<BusStopInterface, BusInterface> getSolutions() {
+        public LinkedList<BusAndBusStop> getSolutions() {
             return solutions;
         }
 
