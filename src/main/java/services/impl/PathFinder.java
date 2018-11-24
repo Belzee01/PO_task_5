@@ -101,7 +101,12 @@ public class PathFinder implements PathFinderInterface {
 
         final int ctc = currentTransferCount + 1;
 
-        this.intersectionsMap.get(start.getBusLine()).stream()
+        List<Pair> pairs = this.intersectionsMap.get(start.getBusLine());
+
+        if (pairs == null || pairs.isEmpty())
+            return false;
+
+        pairs.stream()
                 .filter(p -> !stack.contains(p))
                 .forEach(p -> {
                     boolean isFound = bruteForceToDestination(p, destination, transfers, ctc);
