@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class PathFinder implements PathFinderInterface {
 
@@ -245,16 +244,45 @@ public class PathFinder implements PathFinderInterface {
             return this;
         }
 
+        public int indexOf(BusLineInterface line, BusStopInterface stop) {
+            int index = -1;
+            for (int i = 0; i < line.getNumberOfBusStops(); i++) {
+                if (line.getBusStop(i).equals(stop)) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
+
         public void normalizeToBusStops() {
             LinkedList<BusAndBusStop> buses = new LinkedList<>();
 
             for (int i = 1; i < this.busStops.size(); i++) {
                 BusStopInterface prevStop = busStops.get(i - 1).getBusStop();
                 BusLineInterface prevLine = busStops.get(i - 1).getBusLine();
-
                 BusStopInterface nextStop = busStops.get(i).getBusStop();
 
-                buses.addAll(findBusStopInBetween(prevLine, prevStop, nextStop));
+                int prevStopIndex = indexOf(prevLine, prevStop);
+                int nextStopIndex = indexOf(prevLine, nextStop);
+
+                int direction = prevStopIndex - nextStopIndex;
+                if (direction < 0) {
+                    for (int j = prevStopIndex; j <= nextStopIndex; j++) {
+                        buses.add(new BusAndBusStop(busLineGridMap.get(prevLine), prevLine.getBusStop(j)));
+                    }
+                } else {
+                    for (int j = prevStopIndex; j >= nextStopIndex; j--) {
+                        buses.add(new BusAndBusStop(busLineGridMap.get(prevLine), prevLine.getBusStop(j)));
+                    }
+                }
+            }
+
+            if (!buses.isEmpty()) {
+                for (int i = 1; i < buses.size(); i++) {
+                    if (buses.get(i).getBusStop().equals(buses.get(i - 1).getBusStop()))
+                        buses.remove(i - 1);
+                }
             }
 
             this.solutions = buses;

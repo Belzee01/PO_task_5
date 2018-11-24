@@ -81,7 +81,7 @@ public class Main {
 //        System.out.println(finder.getNumerOfSolutions());
 //        finder.getSolutions().forEach(s -> System.out.println(s.toString()));
 
-        finder.find(busStops.get(0), busStops.get(8), 2);
+        finder.find(busStops.get(0), busStops.get(7), 2);
         System.out.println(finder.getNumerOfSolutions());
         finder.getSolutions().forEach(s -> {
             System.out.println(s.toString());
