@@ -1,5 +1,3 @@
-package services;
-
 public interface PathFinderInterface {
     /**
      * Metoda dodaje liniÄ autobusowÄ do serwisu. Ten sam autobus

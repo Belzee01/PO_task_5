@@ -1,5 +1,3 @@
-package services;
-
 public interface BusLineInterface {
     /**
      * Metoda zwraca liczbÄ przystankĂłw, ktĂłre wchodzÄ w jej skĹad.

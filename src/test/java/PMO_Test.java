@@ -1,11 +1,6 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import services.BusInterface;
-import services.BusLineInterface;
-import services.BusStopInterface;
-import services.PathFinderInterface;
-import services.impl.PathFinder;
 
 import java.text.DecimalFormat;
 import java.time.Duration;

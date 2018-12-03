@@ -1,5 +1,3 @@
-package services;
-
 public interface BusInterface {
     /**
      * Metoda zwraca numer autobusu

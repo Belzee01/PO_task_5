@@ -1,5 +1,3 @@
-package services;
-
 public interface BusStopInterface {
     /**
      * Metoda zwraca nazwÄ przystanku.
